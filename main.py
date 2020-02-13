@@ -7,7 +7,7 @@ WIDTH = 1280
 
 # Global constants here
 BLACK = (255, 255, 255)
-BLACK = (0, 0, 0)
+WHITE = (0, 0, 0)
 GREY = (50, 50, 50)
 RED = (207, 0, 0)
 
@@ -16,9 +16,11 @@ pygame.init()
 pygame.display.set_caption("Poker")
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 
-a = 0
+a = 'dyxnmsl'
+pos=-1
+now=''
 
-font = pygame.font.Font('font/CoffeeTin.ttf', 50)
+font = pygame.font.Font('font/IndianPoker.ttf', 50)
 
 while True:
     vis = False
@@ -27,8 +29,10 @@ while True:
             pygame.quit();
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            a = a + 1
+            pos=(pos+1)%7
             vis = True
-    if vis == False:
-        continue
-    print(a)
+    if vis:
+        now=now+a[pos]
+    text = font.render(now, 1, BLACK)
+    SCREEN.blit(text, (10, 10))
+    pygame.display.flip()
