@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import random
 
 HEIGHT = 720
 WIDTH = 1280
@@ -16,11 +17,27 @@ pygame.init()
 pygame.display.set_caption("Poker")
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT), 0, 32)
 
-a = 'dyxnmsl'
+a = [0, 0, 0, 0]
+
 pos = -1
 now = ''
 
 font = pygame.font.Font('font/IndianPoker.ttf', 50)
+
+# 自定义计时事件
+CHANGE = pygame.USEREVENT + 1
+
+# 每隔1秒发送一次自定义事件
+pygame.time.set_timer(CHANGE, 1000)
+
+
+def gg(stat):
+    if stat == 1:
+        text = font.render("You win!", 1, BLACK)
+    else:
+        text = font.render("You lose!", 0, BLACK)
+    pygame.time.set_timer(CHANGE, 0)
+
 
 while True:
     vis = False
@@ -28,11 +45,16 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit();
             sys.exit()
+        elif event.type == CHANGE:
+            pos = (pos + 1) % 4
+            a[pos] = random.randint() % 10
         elif event.type == pygame.KEYDOWN:
-            pos = (pos + 1) % 7
-            vis = True
-    if vis:
-        now = now + a[pos]
-    text = font.render(now, 1, BLACK)
+            sum = 0
+            for i in a:
+                sum += i
+            if sum % 10 == 0:
+                gg(1)
+            else:
+                gg(0)
     SCREEN.blit(text, (10, 10))
     pygame.display.flip()
