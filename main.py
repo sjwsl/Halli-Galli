@@ -35,7 +35,7 @@ def gg(stat):
     if stat == 1:
         text = font.render("You win!", 1, BLACK)
     else:
-        text = font.render("You lose!", 0, BLACK)
+        text = font.render("You lose!", 1, BLACK)
     pygame.time.set_timer(CHANGE, 0)
 
 
@@ -46,6 +46,11 @@ while True:
             pygame.quit();
             sys.exit()
         elif event.type == CHANGE:
+            sum = 0
+            for i in a:
+                sum += i
+            if sum % 10 == 0:
+                gg(0)
             pos = (pos + 1) % 4
             a[pos] = random.randint() % 10
         elif event.type == pygame.KEYDOWN:
@@ -56,5 +61,9 @@ while True:
                 gg(1)
             else:
                 gg(0)
-    SCREEN.blit(text, (10, 10))
+
+    SCREEN.blit(font.render(a[0], 1, BLACK), (10, 10))
+    SCREEN.blit(font.render(a[0], 1, BLACK), (10, 70))
+    SCREEN.blit(font.render(a[0], 1, BLACK), (10, 10))
+    SCREEN.blit(font.render(a[0], 1, BLACK), (10, 10))
     pygame.display.flip()
