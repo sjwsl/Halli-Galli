@@ -98,9 +98,6 @@ class Control:
         pygame.display.flip()
 
     def play_init(self):
-        # create the new variables
-        self.cardLoc = {}
-        self.round = 0
 
         self.numbers = [random.randint(0, 10) for i in range(0, 4)]
 
@@ -110,10 +107,13 @@ class Control:
         self.font2 = pygame.font.Font('font/CoffeeTin.ttf', 60)
         self.youText = self.font.render("Your Hand", 1, BLACK)
         self.youSize = self.font.size("Your Hand")
+        self.replaceButton = self.font2.render(" Replace ", 1, BLACK)
+        self.buttonSize = self.font2.size(" Replace ")
         self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
         self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
     def play(self):
+        print('play!')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit();
@@ -121,7 +121,9 @@ class Control:
 
             # when the user clicks on a card, change its color to signify a selection has occurred
             elif event.type == pygame.KEYDOWN:
-                self.results()
+                ++self.state
+                self.results_init()
+                return
 
         # display background
         SCREEN.blit(self.background, (-320, -100))
@@ -141,76 +143,23 @@ class Control:
         self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
         self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
-        # initialize variables for drawing the hands
-        self.comp1Loc = (self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1] / 2)
-        self.comp2Loc = (
-            WIDTH - int(5 * self.scale * self.cardSize[0]) - self.buffer,
-            HEIGHT / 2 - self.scale * self.cardSize[1] / 2)
-        self.comp3Loc = (4.5 * int(self.scale * self.cardSize[0]), HEIGHT - self.scale * self.cardSize[1] - self.buffer)
-
-        self.result = self.poker.play_round()
-
-        # initialize variables for labeling the hands
-        playerScore = self.poker.convert_score(self.result[0])
-        self.youText = self.font.render(playerScore, 1, BLACK)
-        self.youSize = self.font.size(playerScore)
-        self.youLoc = (self.cardLoc[0][0], self.cardLoc[0][1] - 30)
-
-        comp1Score = self.poker.convert_score(self.result[1])
-        self.comp1Label = self.font.render(comp1Score, 1, BLACK)
-        self.comp1LabelSize = self.font.size(comp1Score)
-        self.comp1LabelLoc = (self.comp1Loc[0], self.comp1Loc[1] - 30)
-
-        comp2Score = self.poker.convert_score(self.result[2])
-        self.comp2Label = self.font.render(comp2Score, 1, BLACK)
-        self.comp2LabelSize = self.font.size(comp2Score)
-        self.comp2LabelLoc = (self.comp2Loc[0], self.comp2Loc[1] - 30)
-
-        comp3Score = self.poker.convert_score(self.result[3])
-        self.comp3Label = self.font.render(comp3Score, 1, BLACK)
-        self.comp3LabelSize = self.font.size(comp3Score)
-        self.comp3LabelLoc = (self.comp3Loc[0], self.comp3Loc[1] - 30)
-
     def results(self):
+        print('over!')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit();
                 sys.exit()
-
             # when the user clicks the start button, change to the playing state
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    mouseRect = pygame.Rect(event.pos, (1, 1))
-                    if mouseRect.colliderect(self.buttonRect):
-                        # self.start_up_init()
-                        self.state = 1
-                        self.play_init()
-                        self.poker = PokerModel.Poker(self.scores)
-                        return
+                mouseRect = pygame.Rect(event.pos, (1, 1))
+                if mouseRect.colliderect(self.buttonRect):
+                    # self.start_up_init()
+                    self.state = 1
+                    self.play_init()
+                    return
 
         # display background
         SCREEN.blit(self.background, (-320, -100))
-
-        # print player hand in the top
-        self.display_hand(self.poker.playerHand, self.cardLoc[0][0], self.cardLoc[0][1])
-
-        # print computer 1 on the left
-        self.display_hand(self.poker.comp1Hand, self.comp1Loc[0], self.comp1Loc[1])
-
-        # print computer 2 on the right
-        self.display_hand(self.poker.comp2Hand, self.comp2Loc[0], self.comp2Loc[1])
-
-        # print computer 3 on the bottom
-        self.display_hand(self.poker.comp3Hand, self.comp3Loc[0], self.comp3Loc[1])
-
-        # print labels saying what each hand was
-        SCREEN.blit(self.youText, self.youLoc)
-        SCREEN.blit(self.comp1Label, self.comp1LabelLoc)
-        SCREEN.blit(self.comp2Label, self.comp2LabelLoc)
-        SCREEN.blit(self.comp3Label, self.comp3LabelLoc)
-
-        # display a score screen
-        self.display_scoreboard()
 
         # display a play again button
         pygame.draw.rect(SCREEN, RED, self.buttonRect)
@@ -220,12 +169,13 @@ class Control:
         pygame.display.flip()
 
     def display(self):
-        SCREEN.blit(self.font.render(str(self.numbers[0]),1,BLACK), (10, 10))
-        SCREEN.blit(self.font.render(str(self.numbers[0]),1,BLACK), (10, 80))
-        SCREEN.blit(self.font.render(str(self.numbers[0]),1,BLACK), (10, 150))
-        SCREEN.blit(v, (10, 220))
+        SCREEN.blit(self.font.render(str(self.numbers[0]), 1, BLACK), (10, 10))
+        SCREEN.blit(self.font.render(str(self.numbers[1]), 1, BLACK), (10, 80))
+        SCREEN.blit(self.font.render(str(self.numbers[2]), 1, BLACK), (10, 150))
+        SCREEN.blit(self.font.render(str(self.numbers[3]), 1, BLACK), (10, 220))
 
 
+#############################################################
 if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'  # center screen
     pygame.init()
