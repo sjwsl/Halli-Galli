@@ -99,7 +99,11 @@ class Control:
 
     def play_init(self):
 
-        self.numbers = [random.randint(0, 10) for i in range(0, 4)]
+        self.pos = -1
+
+        pygame.time.set_timer(pygame.USEREVENT + 1, 1000)
+
+        self.numbers = [random.randint(0, 9) for i in range(0, 4)]
 
         # setup the text that will be printed to the screen
         self.font = pygame.font.Font('font/IndianPoker.ttf', 25)
@@ -119,11 +123,17 @@ class Control:
                 pygame.quit();
                 sys.exit()
 
-            # when the user clicks on a card, change its color to signify a selection has occurred
             elif event.type == pygame.KEYDOWN:
-                ++self.state
+                self.state += 1
                 self.results_init()
                 return
+
+            elif event.type == pygame.USEREVENT + 1:
+                self.pos += 1
+                if self.pos == 4:
+                    self.pos = 0
+                self.numbers[self.pos] += random.randint(1, 9)
+                self.numbers[self.pos] %= 10
 
         # display background
         SCREEN.blit(self.background, (-320, -100))
@@ -133,6 +143,16 @@ class Control:
         pygame.display.flip()
 
     def results_init(self):
+
+        sum = 0
+        for i in range(4):
+            sum += self.numbers[i]
+
+        if sum % 5 == 0:
+            self.resultText = 'YOU WIN!'
+        else:
+            self.resultText = 'YOU LOSE!'
+
         # initialize variables for the button
         # self.font = pygame.font.Font('font/IndianPoker.ttf', 25)
         self.replaceButton = self.font2.render(" New Game ", 1, BLACK)
@@ -144,7 +164,6 @@ class Control:
         self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
     def results(self):
-        print('over!')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit();
@@ -166,6 +185,10 @@ class Control:
         pygame.draw.rect(SCREEN, BLACK, self.buttonRectOutline, 2)
         SCREEN.blit(self.replaceButton, self.buttonLoc)
 
+        self.display()
+
+        SCREEN.blit(self.font.render(self.resultText, 3, BLACK), (100, 100))
+
         pygame.display.flip()
 
     def display(self):
@@ -185,4 +208,4 @@ if __name__ == "__main__":
     Myclock = pygame.time.Clock()
     while 1:
         Runit.main()
-        Myclock.tick(10)
+        Myclock.tick(100)
